@@ -5,11 +5,11 @@ import pandas as pd
 train = pd.read_csv("train_63qYitG.csv")
 test = pd.read_csv("test_XaoFywY.csv")
 
-train['Gender'] = train['Gender'].replace(to_replace = {'Male': 0, 'Female': 1})
+train['Gender'] = train['Gender'].replace(to_replace = {'Male': 0, 'Female': 1}) #XGBoost works on only numeric vectors 
 test['Gender'] = test['Gender'].replace(to_replace = {'Male': 0, 'Female': 1})
 
 type_of_cab = {'A': 0, 'B': 1, 'C': 2, 'D': 3, 'E': 4}
-train['Type_of_Cab'] = train['Type_of_Cab'].replace(to_replace = type_of_cab)
+train['Type_of_Cab'] = train['Type_of_Cab'].replace(to_replace = type_of_cab) #XGBoost works on only numeric vectors 
 test['Type_of_Cab'] = test['Type_of_Cab'].replace(to_replace = type_of_cab)
 
 
@@ -19,19 +19,19 @@ test['Confidence_Life_Style_Index'] = test['Confidence_Life_Style_Index'].replac
 
 train['Surge_Pricing_Type'] = train['Surge_Pricing_Type'] - 1
 
-X_train = train.copy()
+X_train = train.copyf()
 X_test = test.copy()
 
 from sklearn.preprocessing import LabelEncoder
 print("Label Encoding...")
 for f in ['Destination_Type']:
     lbl = LabelEncoder()
-    lbl.fit(list(X_train[f].values) + list(X_test[f].values))
+    lbl.fit(list(X_train[f].values) + list(X_test[f].values)) #transforming values in Destination type using label encoder 
     X_train[f] = lbl.transform(list(X_train[f].values))
     X_test[f] = lbl.transform(list(X_test[f].values))
 
-features = np.setdiff1d(train.columns, ['Trip_ID', 'Surge_Pricing_Type'])
-
+features = np.setdiff1d(train.columns, ['Trip_ID', 'Surge_Pricing_Type']) # returns set difference of the two arrays that have been 
+                                                                          #passed as the arguments. Feature extraction, all columns except first and last       
 params = {"objective": "multi:softmax","booster": "gbtree", "nthread": 4, "silent": 1,
                 "eta": 0.08, "max_depth": 6, "subsample": 0.9, "colsample_bytree": 0.7,
                 "min_child_weight": 1, "num_class": 3,
